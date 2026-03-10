@@ -2,263 +2,304 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>逃離辦公室 ESCAPE THE OFFICE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nebula Casino - Dragon Gate</title>
     <style>
         :root {
-            --bg-black: #000000;
-            --gold-main: #ffcf40;
-            --text-gray: #aaaaaa;
-            --road-black: #111111;
-            --dash-gray: #444444;
+            --foggy-blue: #A7C7E7;
+            --ios-bg: #F2F2F7;
+            --card-white: #FFFFFF;
+            --text-dark: #1C1C1E;
+            --accent-red: #FF3B30;
+            --btn-active: #8EADC9;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            margin: 0; padding: 0; overflow: hidden;
-            font-family: 'Arial Rounded MT Bold', 'Microsoft JhengHei', sans-serif;
-            background-color: #1a1a1a;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; color: var(--gold-main);
-            touch-action: none;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--ios-bg);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        #phone-wrapper {
-            position: relative;
-            width: 100%; height: 100%; max-width: 414px; max-height: 850px;
-            background: var(--bg-black); overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 10px solid #333;
-            border-radius: 40px;
+        /* 頂部資訊欄 */
+        header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
-        .screen {
-            position: absolute; inset: 0;
-            display: none; flex-direction: column;
-            align-items: center; justify-content: space-between;
-            padding: 50px 20px; text-align: center;
-            z-index: 10; background: var(--bg-black);
+        .balance {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--foggy-blue);
         }
 
-        .active { display: flex; }
-
-        .logo {
-            font-size: 52px; font-weight: 900; line-height: 1.1;
-            color: var(--gold-main);
-            text-shadow: 2px 2px 0 #444, 4px 4px 0 #222;
-            margin-top: 40px;
+        /* 遊戲區域 */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
         }
 
-        .play-btn {
-            width: 220px; padding: 15px;
-            background: var(--gold-main); border: none;
-            border-radius: 20px; font-size: 24px; font-weight: 900;
-            color: #000; cursor: pointer;
-            box-shadow: 0 6px 0 #b38f00;
-            transition: all 0.1s; margin-bottom: 20px;
+        .game-status {
+            font-size: 18px;
+            font-weight: 500;
+            height: 24px;
         }
-        .play-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b38f00; }
 
-        #game-layer { position: absolute; inset: 0; display: none; background: var(--road-black); }
-        #gameCanvas { display: block; width: 100%; height: 100%; }
-
-        /* 排行榜樣式 */
-        .rank-list { text-align: left; width: 80%; margin: 10px 0; font-size: 18px; color: #fff; }
-        .rank-item { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--dash-gray); padding: 5px 0; }
-        .rank-gold { color: var(--gold-main); font-weight: bold; }
-
-        .overlay {
-            position: absolute; inset: 0; background: rgba(0, 0, 0, 0.9);
-            display: none; justify-content: center; align-items: center; z-index: 100;
+        .card-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
         }
-        .card { background: #111; width: 75%; border-radius: 30px; padding: 25px; border: 3px solid var(--gold-main); }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .card {
+            width: 90px;
+            height: 130px;
+            background: var(--card-white);
+            border-radius: 12px;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .card.placeholder {
+            border: 2px dashed var(--foggy-blue);
+            background: transparent;
+            box-shadow: none;
+            color: var(--foggy-blue);
+        }
+
+        .card.target {
+            transform: scale(1.1);
+            border: 2px solid var(--foggy-blue);
+        }
+
+        .card.red { color: var(--accent-red); }
+
+        /* 操作面板 */
+        .controls {
+            padding: 30px 20px 50px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            border-radius: 30px 30px 0 0;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 15px;
+        }
+
+        .btn {
+            height: 60px;
+            border-radius: 16px;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .btn-fold { background: #E5E5EA; color: #3A3A3C; }
+        .btn-bet { background: var(--foggy-blue); color: white; }
+        
+        /* 特殊選擇 (比大/比小) */
+        .special-controls {
+            grid-column: 1 / span 2;
+            display: none;
+            gap: 10px;
+        }
+        .btn-choice { background: #34C759; color: white; flex: 1; }
     </style>
 </head>
 <body>
 
-<div id="phone-wrapper">
-    <div id="splash-screen" class="screen active">
-        <div class="logo">逃離<br>辦公室</div>
-        <div style="margin-bottom: 100px;">
-            <div style="width: 200px; height: 10px; background: #222; border: 2px solid var(--gold-main); border-radius: 10px; padding: 2px;">
-                <div id="progress-bar" style="width: 0%; height: 100%; background: var(--gold-main); border-radius: 10px;"></div>
-            </div>
-            <div id="loading-text" style="margin-top: 10px; font-size: 14px;">嘗試逃離生活...</div>
-        </div>
-    </div>
+<header>
+    <div class="balance">Chips: <span id="chips">1000</span></div>
+</header>
 
-    <div id="home-screen" class="screen">
-        <div class="logo">逃離<br>辦公室</div>
-        <div id="leaderboard-home" class="rank-list">
-            <p style="text-align:center; color: var(--gold-main);">🏆 菁英社畜排行榜</p>
-            <div id="rank-content"></div>
-        </div>
-        <div>
-            <button class="play-btn" onclick="initGame()">開始打卡</button>
-        </div>
+<main>
+    <div class="game-status" id="status">準備開始...</div>
+    <div class="card-container">
+        <div id="card-left" class="card placeholder">?</div>
+        <div id="card-target" class="card placeholder">?</div>
+        <div id="card-right" class="card placeholder">?</div>
     </div>
+</main>
 
-    <div id="game-layer">
-        <div style="position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; z-index: 20; pointer-events: none;">
-            <div id="coin-ui-game" style="background: rgba(0,0,0,0.7); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--gold-main);">💰 0</div>
-        </div>
-        <canvas id="gameCanvas"></canvas>
-    </div>
-
-    <div id="result-overlay" class="overlay">
-        <div class="card fade-in">
-            <h2 style="color: var(--gold-main); margin-top:0;">你被開除了!!!</h2>
-            <p id="result-score" style="font-size:22px; color: #fff;">本次積蓄: 💰 0</p>
-            <hr style="border: 0; border-top: 1px solid var(--dash-gray);">
-            <div id="leaderboard-result" class="rank-list" style="width: 100%; font-size: 16px;"></div>
-            <button class="play-btn" style="width:100%; margin-top: 15px;" onclick="initGame()">重新入職</button>
-            <button onclick="toHome()" style="background:none; border:none; color:var(--text-gray); cursor:pointer; font-weight:bold;">自請離職</button>
-        </div>
+<div class="controls">
+    <button class="btn btn-fold" id="btn-fold" onclick="handleAction('fold')">棄牌</button>
+    <button class="btn btn-bet" id="btn-bet" onclick="handleAction('deal')">發牌</button>
+    
+    <div class="special-controls" id="special-area">
+        <button class="btn btn-choice" onclick="handleAction('bet-high')">比大</button>
+        <button class="btn btn-choice" onclick="handleAction('bet-low')">比小</button>
     </div>
 </div>
 
 <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    let gameRunning = false, score = 0, playerLane = 1, visualX = 0, speed = 7, obstacles = [];
-    let lanes = [];
-    let roadOffset = 0; // 用於車道捲動
-
-    const SPRITES = { player: '👨‍💼', bosses: ['👨‍💻', '🧛', '👹'], item: '💰' };
-
-    // --- 排行榜邏輯 ---
-    function updateLeaderboard(newScore) {
-        let scores = JSON.parse(localStorage.getItem('office_ranks')) || [];
-        if (newScore !== undefined) {
-            scores.push(newScore);
-            scores.sort((a, b) => b - a);
-            scores = scores.slice(0, 5);
-            localStorage.setItem('office_ranks', JSON.stringify(scores));
-        }
-        
-        const html = scores.map((s, i) => `
-            <div class="rank-item ${i === 0 ? 'rank-gold' : ''}">
-                <span>No.${i + 1}</span>
-                <span>💰 ${s}</span>
-            </div>
-        `).join('') || '<p style="text-align:center; font-size:14px;">暫無紀錄，快去加班！</p>';
-        
-        document.getElementById('rank-content').innerHTML = html;
-        document.getElementById('leaderboard-result').innerHTML = `<p style="text-align:center; margin: 5px 0;">Top 5 紀錄</p>` + html;
-    }
-
-    window.onload = () => {
-        updateLeaderboard();
-        let prog = 0;
-        const bar = document.getElementById('progress-bar');
-        const itv = setInterval(() => {
-            prog += 5;
-            bar.style.width = prog + '%';
-            if (prog >= 100) { clearInterval(itv); showScreen('home-screen'); }
-        }, 50);
+    let deck = [];
+    let state = {
+        chips: 1000,
+        left: null,
+        right: null,
+        target: null,
+        phase: 'start' // start, wait_bet, result
     };
 
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('game-layer').style.display = id === 'game' ? 'block' : 'none';
-        if (document.getElementById(id)) document.getElementById(id).classList.add('active');
-    }
+    const suits = { '♠': 'black', '♥': 'red', '♦': 'red', '♣': 'black' };
+    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
-    function initGame() {
-        document.getElementById('result-overlay').style.display = 'none';
-        showScreen('game');
-        const wrapper = document.getElementById('phone-wrapper');
-        canvas.width = wrapper.offsetWidth;
-        canvas.height = wrapper.offsetHeight;
-        lanes = [canvas.width / 6, canvas.width / 2, (canvas.width / 6) * 5];
-        visualX = lanes[1];
-        gameRunning = true; score = 0; speed = 7; obstacles = []; playerLane = 1; roadOffset = 0;
-        updateUI();
-        gameLoop();
-    }
-
-    function toHome() {
-        document.getElementById('result-overlay').style.display = 'none';
-        updateLeaderboard();
-        showScreen('home-screen');
+    // Fisher-Yates 洗牌
+    function createDeck() {
+        let newDeck = [];
+        Object.keys(suits).forEach(s => {
+            ranks.forEach((r, i) => newDeck.push({ suit: s, rank: r, value: i + 1 }));
+        });
+        for (let i = newDeck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+        }
+        return newDeck;
     }
 
     function updateUI() {
-        document.getElementById('coin-ui-game').innerText = `💰 ${score}`;
-    }
+        document.getElementById('chips').innerText = state.chips;
+        renderCard('card-left', state.left);
+        renderCard('card-right', state.right);
+        renderCard('card-target', state.target, state.phase !== 'result');
 
-    function gameLoop() {
-        if (!gameRunning) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const btnBet = document.getElementById('btn-bet');
+        const btnFold = document.getElementById('btn-fold');
+        const specialArea = document.getElementById('special-area');
 
-        // 背景與動態虛線
-        ctx.fillStyle = "#111"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        roadOffset = (roadOffset + speed) % 60; // 根據速度捲動
-        ctx.strokeStyle = '#444'; ctx.lineWidth = 2; ctx.setLineDash([30, 30]);
-        ctx.lineDashOffset = -roadOffset; // 這裡讓線條動起來
-
-        [canvas.width/3, canvas.width*2/3].forEach(x => {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-        });
-
-        // 玩家移動
-        visualX += (lanes[playerLane] - visualX) * 0.25;
-        ctx.font = '60px Arial'; ctx.textAlign = 'center';
-        ctx.fillText(SPRITES.player, visualX, canvas.height - 120);
-
-        // 生成障礙
-        if (Math.random() > 0.95) {
-            const lane = Math.floor(Math.random() * 3);
-            const isMoney = Math.random() > 0.45;
-            obstacles.push({
-                x: lanes[lane], y: -60, lane: lane, 
-                type: isMoney ? SPRITES.item : SPRITES.bosses[Math.floor(Math.random()*3)],
-                isMoney
-            });
-        }
-
-        for (let i = obstacles.length - 1; i >= 0; i--) {
-            let o = obstacles[i];
-            o.y += speed;
-            ctx.font = '50px Arial'; ctx.fillText(o.type, o.x, o.y);
-
-            if (Math.abs(o.y - (canvas.height - 120)) < 55 && o.lane === playerLane) {
-                if (o.isMoney) {
-                    score += 100; updateUI(); obstacles.splice(i, 1);
-                } else {
-                    gameOver();
-                }
+        if (state.phase === 'start') {
+            btnBet.innerText = '發牌';
+            btnBet.style.display = 'block';
+            btnFold.style.display = 'block';
+            specialArea.style.display = 'none';
+        } else if (state.phase === 'wait_bet') {
+            btnBet.innerText = '下注 (Bet)';
+            if (state.left && state.right && state.left.value === state.right.value) {
+                btnBet.style.display = 'none';
+                specialArea.style.display = 'flex';
             }
-            if (o.y > canvas.height) obstacles.splice(i, 1);
         }
-
-        speed += 0.002;
-        requestAnimationFrame(gameLoop);
     }
 
-    function gameOver() {
-        gameRunning = false;
-        document.getElementById('result-score').innerText = `本次積蓄: 💰 ${score}`;
-        updateLeaderboard(score);
-        document.getElementById('result-overlay').style.display = 'flex';
+    function renderCard(id, cardData, isHidden = false) {
+        const el = document.getElementById(id);
+        if (!cardData) {
+            el.innerText = '?';
+            el.className = 'card placeholder';
+            return;
+        }
+        if (isHidden) {
+            el.innerText = 'Nebula';
+            el.className = 'card placeholder target';
+            return;
+        }
+        el.innerHTML = `<div>${cardData.suit}</div><div>${cardData.rank}</div>`;
+        el.className = `card ${suits[cardData.suit]} ${id === 'card-target' ? 'target' : ''}`;
     }
 
-    // 控制
-    window.addEventListener('keydown', e => {
-        if (gameRunning) {
-            if ((e.key==='ArrowLeft'||e.key==='a') && playerLane > 0) playerLane--;
-            if ((e.key==='ArrowRight'||e.key==='d') && playerLane < 2) playerLane++;
+    function handleAction(action) {
+        if (action === 'deal') {
+            if (state.phase === 'start') {
+                if (deck.length < 3) deck = createDeck();
+                state.left = deck.pop();
+                state.right = deck.pop();
+                state.target = null;
+                state.phase = 'wait_bet';
+                document.getElementById('status').innerText = '請下注或棄牌';
+            } else if (state.phase === 'wait_bet') {
+                resolveGame('normal');
+            } else {
+                resetGame();
+            }
+        } else if (action === 'fold') {
+            resetGame();
+            document.getElementById('status').innerText = '已棄牌，新的一局';
+        } else if (action.startsWith('bet-')) {
+            resolveGame(action === 'bet-high' ? 'high' : 'low');
         }
-    });
+        updateUI();
+    }
 
-    canvas.addEventListener('touchstart', e => {
-        if (!gameRunning) return;
-        const tx = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-        if (tx < canvas.width / 2) { if (playerLane > 0) playerLane--; }
-        else { if (playerLane < 2) playerLane++; }
-    });
+    function resolveGame(type) {
+        state.target = deck.pop();
+        state.phase = 'result';
+        const result = checkLogic(type);
+        
+        if (result === 'WIN') {
+            state.chips += 100;
+            document.getElementById('status').innerText = '🎉 贏了！';
+        } else if (result === 'HIT_POST') {
+            state.chips -= 200;
+            document.getElementById('status').innerText = '💀 撞柱！支付雙倍';
+        } else {
+            state.chips -= 100;
+            document.getElementById('status').innerText = '❌ 輸了';
+        }
+        
+        document.getElementById('btn-bet').innerText = '再一局';
+        document.getElementById('special-area').style.display = 'none';
+        document.getElementById('btn-bet').style.display = 'block';
+    }
+
+    function checkLogic(type) {
+        const t = state.target.value;
+        const l = state.left.value;
+        const r = state.right.value;
+
+        if (t === l || t === r) return 'HIT_POST';
+
+        if (type === 'normal') {
+            const min = Math.min(l, r);
+            const max = Math.max(l, r);
+            return (t > min && t < max) ? 'WIN' : 'LOSE';
+        } else if (type === 'high') {
+            return t > l ? 'WIN' : 'LOSE';
+        } else if (type === 'low') {
+            return t < l ? 'WIN' : 'LOSE';
+        }
+    }
+
+    function resetGame() {
+        state.phase = 'start';
+        state.left = null;
+        state.right = null;
+        state.target = null;
+        document.getElementById('status').innerText = '點擊發牌開始';
+    }
+
+    // 初始化
+    deck = createDeck();
+    updateUI();
 </script>
 
 </body>
